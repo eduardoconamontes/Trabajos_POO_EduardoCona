@@ -47,7 +47,7 @@ public class Ruleta {
     public static void ejecutarOpcion(int opcion, Scanner in) {
         switch (opcion) {
             case 1:
-                System.out.println("Iniciar ronda");
+                iniciarRonda(in);
                 break;
             case 2:
                 System.out.println("Ver estadisticas");
@@ -60,19 +60,23 @@ public class Ruleta {
         }
     }
     public static char leerTipoApuesta(Scanner in) {
-        char tipo;
+        String entrada;
 
         do {
             System.out.print("Tipo de apuesta (R/N/P/I): ");
-            tipo = in.next().toUpperCase().charAt(0);
+            entrada = in.next().toUpperCase();
 
-            if (tipo != 'R' && tipo != 'N' && tipo != 'P' && tipo != 'I') {
-                System.out.println("Tipo de apuesta no valido.");
+            if (entrada.length() == 1) {
+                char tipo = entrada.charAt(0);
+
+                if (tipo == 'R' || tipo == 'N' || tipo == 'P' || tipo == 'I') {
+                    return tipo;
+                }
             }
 
-        } while (tipo != 'R' && tipo != 'N' && tipo != 'P' && tipo != 'I');
+            System.out.println("Tipo de apuesta no valido.");
 
-        return tipo;
+        } while (true);
     }
 
     public static int girarRuleta() {
@@ -107,21 +111,53 @@ public class Ruleta {
         }
     }
 
+    public static void iniciarRonda(Scanner in) {
+        char tipo = leerTipoApuesta(in);
 
+        int monto;
 
+        do {
+            System.out.print("Ingrese monto a apostar: ");
 
+            if (in.hasNextInt()) {
+                monto = in.nextInt();
 
+                if (monto <= 0) {
+                    System.out.println("El monto debe ser mayor que 0.");
+                }
+            } else {
+                System.out.println("Monto no valido.");
+                in.next();
+                monto = 0;
+            }
 
+        } while (monto <= 0);
 
+        int numero = girarRuleta();
+        boolean acierto = evaluarResultado(numero, tipo);
 
+        registrarResultado(numero, monto, acierto);
+        mostrarResultado(numero, tipo, monto, acierto);
+    }
 
+    public static void registrarResultado(int numero, int apuesta, boolean acierto) {
+        if (historialSize < MAX_HISTORIAL) {
+            historialNumeros[historialSize] = numero;
+            historialApuestas[historialSize] = apuesta;
+            historialAciertos[historialSize] = acierto;
+            historialSize++;
+        }
+    }
 
+    public static void mostrarResultado(int numero, char tipo, int monto, boolean acierto) {
+        System.out.println("Numero obtenido: " + numero);
+        System.out.println("Tipo de apuesta: " + tipo);
+        System.out.println("Monto apostado: " + monto);
 
-
-
-
-
-
-
-
+        if (acierto) {
+            System.out.println("Ganaste");
+        } else {
+            System.out.println("Perdiste");
+        }
+    }
 }

@@ -41,6 +41,12 @@ public class Ruleta {
     }
 
     public static int leerOpcion(Scanner in) {
+        while (!in.hasNextInt()) {
+            System.out.println("Opcion no valida.");
+            in.next();
+            System.out.print("Seleccione una opcion: ");
+        }
+
         return in.nextInt();
     }
 
@@ -50,7 +56,7 @@ public class Ruleta {
                 iniciarRonda(in);
                 break;
             case 2:
-                System.out.println("Ver estadisticas");
+                mostrarEstadisticas();
                 break;
             case 3:
                 System.out.println("Saliendo del programa...");
@@ -59,6 +65,7 @@ public class Ruleta {
                 System.out.println("Opcion no valida.");
         }
     }
+
     public static char leerTipoApuesta(Scanner in) {
         String entrada;
 
@@ -159,5 +166,35 @@ public class Ruleta {
         } else {
             System.out.println("Perdiste");
         }
+    }
+
+    public static void mostrarEstadisticas() {
+        int totalApostado = 0;
+        int totalAciertos = 0;
+        int gananciaNeta = 0;
+
+        for (int i = 0; i < historialSize; i++) {
+            totalApostado += historialApuestas[i];
+
+            if (historialAciertos[i]) {
+                totalAciertos++;
+                gananciaNeta += historialApuestas[i];
+            } else {
+                gananciaNeta -= historialApuestas[i];
+            }
+        }
+
+        double porcentajeAciertos = 0;
+
+        if (historialSize > 0) {
+            porcentajeAciertos = (totalAciertos * 100.0) / historialSize;
+        }
+
+        System.out.println("\nESTADISTICAS");
+        System.out.println("Rondas jugadas: " + historialSize);
+        System.out.println("Monto total apostado: " + totalApostado);
+        System.out.println("Total de aciertos: " + totalAciertos);
+        System.out.println("Porcentaje de aciertos: " + porcentajeAciertos + "%");
+        System.out.println("Ganancia o perdida neta: " + gananciaNeta);
     }
 }

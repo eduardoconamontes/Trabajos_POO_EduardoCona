@@ -18,11 +18,14 @@ public class VentanaLogin {
     private final JPasswordField txtClave = new JPasswordField();
 
     private final JButton btnIngresar = new JButton("Ingresar");
+    private final JButton btnRegistrarse = new JButton("Registrarse");
 
     public VentanaLogin() {
 
-        USUARIOS.add(new Usuario("admin", "1234", "Administrador"));
-        USUARIOS.add(new Usuario("jugador", "1234", "Jugador"));
+        if (USUARIOS.isEmpty()) {
+            USUARIOS.add(new Usuario("admin", "1234", "Administrador"));
+            USUARIOS.add(new Usuario("jugador", "1234", "Jugador"));
+        }
 
         frame.setSize(350, 220);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -34,13 +37,20 @@ public class VentanaLogin {
         frame.add(lblClave);
         frame.add(txtClave);
 
-        frame.add(new JLabel(""));
+        frame.add(btnRegistrarse);
         frame.add(btnIngresar);
 
         btnIngresar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 login();
+            }
+        });
+
+        btnRegistrarse.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                abrirRegistro();
             }
         });
     }
@@ -58,6 +68,7 @@ public class VentanaLogin {
         String nombre = validarCredenciales(usuario, clave);
 
         if (!nombre.isEmpty()) {
+
             JOptionPane.showMessageDialog(
                     frame,
                     "Bienvenido " + nombre
@@ -67,7 +78,9 @@ public class VentanaLogin {
 
             VentanaSaludo ventanaSaludo = new VentanaSaludo(nombre);
             ventanaSaludo.mostrarVentana();
+
         } else {
+
             JOptionPane.showMessageDialog(
                     frame,
                     "Usuario o clave incorrectos",
@@ -91,7 +104,16 @@ public class VentanaLogin {
         return "";
     }
 
+    private void abrirRegistro() {
+
+        frame.dispose();
+
+        VentanaRegistro ventanaRegistro = new VentanaRegistro();
+        ventanaRegistro.mostrarVentana();
+    }
+
     public static void main(String[] args) {
+
         VentanaLogin ventana = new VentanaLogin();
         ventana.mostrarVentana();
     }

@@ -62,6 +62,11 @@ public class VentanaLogin {
                     frame,
                     "Bienvenido " + nombre
             );
+
+            frame.dispose();
+
+            VentanaSaludo ventanaSaludo = new VentanaSaludo(nombre);
+            ventanaSaludo.mostrarVentana();
         } else {
             JOptionPane.showMessageDialog(
                     frame,

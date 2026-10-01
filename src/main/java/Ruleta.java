@@ -17,7 +17,8 @@ public class Ruleta {
     };
 
     public static void main(String[] args) {
-        menu();
+        VentanaLogin ventanaLogin = new VentanaLogin();
+        ventanaLogin.mostrarVentana();
     }
 
     public static void menu() {

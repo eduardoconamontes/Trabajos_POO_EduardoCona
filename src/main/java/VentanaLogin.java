@@ -111,10 +111,4 @@ public class VentanaLogin {
         VentanaRegistro ventanaRegistro = new VentanaRegistro();
         ventanaRegistro.mostrarVentana();
     }
-
-    public static void main(String[] args) {
-
-        VentanaLogin ventana = new VentanaLogin();
-        ventana.mostrarVentana();
-    }
 }

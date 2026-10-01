@@ -3,6 +3,7 @@ import java.awt.*;
 
 public class VentanaMenu {
 
+    private final String nombre;
     private final JFrame frame = new JFrame("Menú - Casino Black Cat");
 
     private final JLabel lblBienvenida = new JLabel("", SwingConstants.CENTER);
@@ -13,6 +14,7 @@ public class VentanaMenu {
 
     public VentanaMenu(String nombre) {
 
+        this.nombre = nombre;
         lblBienvenida.setText("Bienvenido " + nombre);
 
         frame.setSize(400, 300);
@@ -24,6 +26,7 @@ public class VentanaMenu {
         frame.add(btnHistorial);
         frame.add(btnCerrarSesion);
         btnCerrarSesion.addActionListener(e -> cerrarSesion());
+        btnJugar.addActionListener(e -> abrirRuleta());
     }
 
     public void mostrarVentana() {
@@ -36,5 +39,12 @@ public class VentanaMenu {
 
         VentanaLogin ventanaLogin = new VentanaLogin();
         ventanaLogin.mostrarVentana();
+    }
+
+    private void abrirRuleta() {
+        frame.dispose();
+
+        VentanaRuleta ventanaRuleta = new VentanaRuleta(nombre);
+        ventanaRuleta.mostrarVentana();
     }
 }

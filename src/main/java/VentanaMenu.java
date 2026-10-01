@@ -27,6 +27,7 @@ public class VentanaMenu {
         frame.add(btnCerrarSesion);
         btnCerrarSesion.addActionListener(e -> cerrarSesion());
         btnJugar.addActionListener(e -> abrirRuleta());
+        btnHistorial.addActionListener(e -> abrirHistorial());
     }
 
     public void mostrarVentana() {
@@ -46,5 +47,15 @@ public class VentanaMenu {
 
         VentanaRuleta ventanaRuleta = new VentanaRuleta(nombre);
         ventanaRuleta.mostrarVentana();
+    }
+
+    private void abrirHistorial() {
+
+        frame.dispose();
+
+        VentanaHistorial ventanaHistorial =
+                new VentanaHistorial(nombre);
+
+        ventanaHistorial.mostrarVentana();
     }
 }

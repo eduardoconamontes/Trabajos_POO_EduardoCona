@@ -76,8 +76,8 @@ public class VentanaLogin {
 
             frame.dispose();
 
-            VentanaSaludo ventanaSaludo = new VentanaSaludo(nombre);
-            ventanaSaludo.mostrarVentana();
+            VentanaMenu ventanaMenu = new VentanaMenu(nombre);
+            ventanaMenu.mostrarVentana();
 
         } else {
 
@@ -110,11 +110,5 @@ public class VentanaLogin {
 
         VentanaRegistro ventanaRegistro = new VentanaRegistro();
         ventanaRegistro.mostrarVentana();
-    }
-
-    public static void main(String[] args) {
-
-        VentanaLogin ventana = new VentanaLogin();
-        ventana.mostrarVentana();
     }
 }

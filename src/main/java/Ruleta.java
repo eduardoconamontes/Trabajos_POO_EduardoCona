@@ -35,7 +35,15 @@ public class Ruleta {
             return false;
         }
 
+        long nuevoSaldo =
+                (long) saldo + monto;
+
+        if (nuevoSaldo > Integer.MAX_VALUE) {
+            return false;
+        }
+
         saldo += monto;
+
         return true;
     }
 
@@ -55,7 +63,9 @@ public class Ruleta {
         return false;
     }
 
-    public boolean evaluarResultado(int numero, TipoApuesta tipo) {
+    public boolean evaluarResultado(
+            int numero,
+            TipoApuesta tipo) {
 
         if (numero == 0 || tipo == null) {
             return false;
@@ -80,34 +90,53 @@ public class Ruleta {
         }
     }
 
-    public Resultado apostar(TipoApuesta tipo, int monto) {
+    public Resultado apostar(
+            TipoApuesta tipo,
+            int monto) {
 
         if (tipo == null) {
+
             throw new IllegalArgumentException(
                     "Debe seleccionar un tipo de apuesta"
             );
         }
 
         if (monto <= 0) {
+
             throw new IllegalArgumentException(
                     "El monto debe ser mayor que cero"
             );
         }
 
         if (monto > saldo) {
+
             throw new IllegalArgumentException(
                     "Saldo insuficiente"
             );
         }
 
-        int numero = girarRuleta();
+        int numero =
+                girarRuleta();
 
         boolean acierto =
                 evaluarResultado(numero, tipo);
 
         if (acierto) {
+
+            long nuevoSaldo =
+                    (long) saldo + monto;
+
+            if (nuevoSaldo > Integer.MAX_VALUE) {
+
+                throw new IllegalArgumentException(
+                        "La ganancia supera el saldo máximo permitido"
+                );
+            }
+
             saldo += monto;
+
         } else {
+
             saldo -= monto;
         }
 

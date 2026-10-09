@@ -96,12 +96,17 @@ public class VentanaLogin {
 
             frame.dispose();
 
+            RuletaController ruletaController =
+                    new RuletaController();
+
             VentanaMenu ventanaMenu =
                     new VentanaMenu(
-                            session.getNombreUsuario()
+                            session,
+                            ruletaController
                     );
 
             ventanaMenu.mostrarVentana();
+
 
         } else {
 

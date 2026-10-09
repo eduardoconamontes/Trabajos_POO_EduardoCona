@@ -2,28 +2,58 @@ import java.util.Random;
 
 public class Ruleta {
 
-    public static final int MAX_HISTORIAL = 100;
-
-    public static int[] historialNumeros = new int[MAX_HISTORIAL];
-    public static int[] historialApuestas = new int[MAX_HISTORIAL];
-    public static boolean[] historialAciertos = new boolean[MAX_HISTORIAL];
-
-    public static int historialSize = 0;
-
-    public static Random rng = new Random();
-
-    public static int[] numerosRojos = {
+    private static final int[] NUMEROS_ROJOS = {
             1, 3, 5, 7, 9, 12, 14, 16, 18,
             19, 21, 23, 25, 27, 30, 32, 34, 36
     };
 
-    public static int girarRuleta() {
+    private int saldo;
+    private Random rng;
+
+    public Ruleta() {
+        this(0);
+    }
+
+    public Ruleta(int saldoInicial) {
+
+        if (saldoInicial >= 0) {
+            this.saldo = saldoInicial;
+        } else {
+            this.saldo = 0;
+        }
+
+        this.rng = new Random();
+    }
+
+    public int getSaldo() {
+        return saldo;
+    }
+
+    public boolean depositar(int monto) {
+
+        if (monto <= 0) {
+            return false;
+        }
+
+        long nuevoSaldo =
+                (long) saldo + monto;
+
+        if (nuevoSaldo > Integer.MAX_VALUE) {
+            return false;
+        }
+
+        saldo += monto;
+
+        return true;
+    }
+
+    public int girarRuleta() {
         return rng.nextInt(37);
     }
 
-    public static boolean esRojo(int numero) {
+    public boolean esRojo(int numero) {
 
-        for (int numeroRojo : numerosRojos) {
+        for (int numeroRojo : NUMEROS_ROJOS) {
 
             if (numero == numeroRojo) {
                 return true;
@@ -33,23 +63,26 @@ public class Ruleta {
         return false;
     }
 
-    public static boolean evaluarResultado(int numero, char tipo) {
+    public boolean evaluarResultado(
+            int numero,
+            TipoApuesta tipo) {
 
-        if (numero == 0) {
+        if (numero == 0 || tipo == null) {
             return false;
         }
 
         switch (tipo) {
-            case 'R':
+
+            case ROJO:
                 return esRojo(numero);
 
-            case 'N':
+            case NEGRO:
                 return !esRojo(numero);
 
-            case 'P':
+            case PAR:
                 return numero % 2 == 0;
 
-            case 'I':
+            case IMPAR:
                 return numero % 2 != 0;
 
             default:
@@ -57,65 +90,61 @@ public class Ruleta {
         }
     }
 
-    public static void registrarResultado(int numero, int apuesta, boolean acierto) {
+    public Resultado apostar(
+            TipoApuesta tipo,
+            int monto) {
 
-        if (historialSize < MAX_HISTORIAL) {
+        if (tipo == null) {
 
-            historialNumeros[historialSize] = numero;
-            historialApuestas[historialSize] = apuesta;
-            historialAciertos[historialSize] = acierto;
-
-            historialSize++;
-        }
-    }
-
-    public static int calcularTotalApostado() {
-
-        int total = 0;
-
-        for (int i = 0; i < historialSize; i++) {
-            total += historialApuestas[i];
+            throw new IllegalArgumentException(
+                    "Debe seleccionar un tipo de apuesta"
+            );
         }
 
-        return total;
-    }
+        if (monto <= 0) {
 
-    public static int calcularTotalAciertos() {
+            throw new IllegalArgumentException(
+                    "El monto debe ser mayor que cero"
+            );
+        }
 
-        int total = 0;
+        if (monto > saldo) {
 
-        for (int i = 0; i < historialSize; i++) {
+            throw new IllegalArgumentException(
+                    "Saldo insuficiente"
+            );
+        }
 
-            if (historialAciertos[i]) {
-                total++;
+        int numero =
+                girarRuleta();
+
+        boolean acierto =
+                evaluarResultado(numero, tipo);
+
+        if (acierto) {
+
+            long nuevoSaldo =
+                    (long) saldo + monto;
+
+            if (nuevoSaldo > Integer.MAX_VALUE) {
+
+                throw new IllegalArgumentException(
+                        "La ganancia supera el saldo máximo permitido"
+                );
             }
+
+            saldo += monto;
+
+        } else {
+
+            saldo -= monto;
         }
 
-        return total;
-    }
-
-    public static double calcularPorcentajeAciertos() {
-
-        if (historialSize == 0) {
-            return 0;
-        }
-
-        return (calcularTotalAciertos() * 100.0) / historialSize;
-    }
-
-    public static int calcularGananciaNeta() {
-
-        int ganancia = 0;
-
-        for (int i = 0; i < historialSize; i++) {
-
-            if (historialAciertos[i]) {
-                ganancia += historialApuestas[i];
-            } else {
-                ganancia -= historialApuestas[i];
-            }
-        }
-
-        return ganancia;
+        return new Resultado(
+                numero,
+                tipo,
+                monto,
+                acierto
+        );
     }
 }

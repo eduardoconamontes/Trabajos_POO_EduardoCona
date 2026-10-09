@@ -1,33 +1,53 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class VentanaRuleta {
 
-    private final String nombre;
-    private final JFrame frame = new JFrame("Ruleta - Casino Black Cat");
+    private final SessionController session;
+    private final RuletaController ruletaController;
 
-    private final JLabel lblTipoApuesta = new JLabel("Tipo de apuesta:");
-    private final JComboBox<String> cmbTipoApuesta = new JComboBox<>(
-            new String[]{"Rojo", "Negro", "Par", "Impar"}
-    );
+    private final JFrame frame =
+            new JFrame("Ruleta - Casino Black Cat");
 
-    private final JLabel lblMonto = new JLabel("Monto a apostar:");
-    private final JTextField txtMonto = new JTextField();
+    private final JLabel lblTipoApuesta =
+            new JLabel("Tipo de apuesta:");
 
-    private final JButton btnJugar = new JButton("Girar Ruleta");
-    private final JButton btnVolver = new JButton("Volver al menú");
+    private final JComboBox<TipoApuesta> cmbTipoApuesta =
+            new JComboBox<>(TipoApuesta.values());
 
-    private final JLabel lblResultado = new JLabel(
-            "Realice una apuesta",
-            SwingConstants.CENTER
-    );
+    private final JLabel lblMonto =
+            new JLabel("Monto a apostar:");
 
-    public VentanaRuleta(String nombre) {
+    private final JTextField txtMonto =
+            new JTextField();
 
-        this.nombre = nombre;
-        frame.setSize(450, 350);
+    private final JLabel lblSaldo =
+            new JLabel("", SwingConstants.CENTER);
+
+    private final JLabel lblResultado =
+            new JLabel(
+                    "Realice una apuesta",
+                    SwingConstants.CENTER
+            );
+
+    private final JButton btnJugar =
+            new JButton("Girar Ruleta");
+
+    private final JButton btnVolver =
+            new JButton("Volver al menú");
+
+    public VentanaRuleta(
+            SessionController session,
+            RuletaController ruletaController) {
+
+        this.session = session;
+        this.ruletaController = ruletaController;
+
+        frame.setSize(450, 400);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setLayout(new GridLayout(4, 2, 10, 10));
+        frame.setLayout(new GridLayout(5, 2, 10, 10));
 
         frame.add(lblTipoApuesta);
         frame.add(cmbTipoApuesta);
@@ -35,94 +55,186 @@ public class VentanaRuleta {
         frame.add(lblMonto);
         frame.add(txtMonto);
 
+        frame.add(lblSaldo);
+        frame.add(lblResultado);
+
         frame.add(btnJugar);
         frame.add(btnVolver);
 
-        frame.add(lblResultado);
+        actualizarSaldo();
 
-        btnVolver.addActionListener(e -> volverMenu());
-        btnJugar.addActionListener(e -> jugar());
+        btnJugar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                jugar();
+            }
+        });
+
+        btnVolver.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                volverMenu();
+            }
+        });
     }
 
     public void mostrarVentana() {
+
+        actualizarSaldo();
+
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
 
     private void jugar() {
 
-        String montoTexto = txtMonto.getText();
+        String montoTexto =
+                txtMonto.getText().trim();
 
         if (montoTexto.isEmpty()) {
+
             JOptionPane.showMessageDialog(
                     frame,
                     "Debe ingresar un monto",
                     "Error",
                     JOptionPane.ERROR_MESSAGE
             );
+
             return;
         }
 
         int monto;
 
         try {
+
             monto = Integer.parseInt(montoTexto);
+
         } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(
-                    frame,
-                    "El monto debe ser un número",
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE
-            );
+
+            if (esTextoEntero(montoTexto)) {
+
+                JOptionPane.showMessageDialog(
+                        frame,
+                        "El monto ingresado es demasiado grande",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE
+                );
+
+            } else {
+
+                JOptionPane.showMessageDialog(
+                        frame,
+                        "Ingrese un número válido",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE
+                );
+            }
+
+            txtMonto.setText("");
+            txtMonto.requestFocus();
+
             return;
         }
 
         if (monto <= 0) {
+
             JOptionPane.showMessageDialog(
                     frame,
-                    "El monto debe ser mayor que 0",
+                    "El monto debe ser mayor que cero",
                     "Error",
                     JOptionPane.ERROR_MESSAGE
             );
+
             return;
         }
 
-        char tipo = obtenerTipoApuesta();
+        TipoApuesta tipo =
+                (TipoApuesta)
+                        cmbTipoApuesta.getSelectedItem();
 
-        int numero = Ruleta.girarRuleta();
-        boolean acierto = Ruleta.evaluarResultado(numero, tipo);
+        try {
 
-        Ruleta.registrarResultado(numero, monto, acierto);
+            Resultado resultado =
+                    ruletaController.realizarApuesta(
+                            tipo,
+                            monto
+                    );
 
-        if (acierto) {
-            lblResultado.setText("Número: " + numero + " - Ganaste");
-        } else {
-            lblResultado.setText("Número: " + numero + " - Perdiste");
+            if (resultado.isAcierto()) {
+
+                lblResultado.setText(
+                        "Número: "
+                                + resultado.getNumero()
+                                + " - Ganaste"
+                );
+
+            } else {
+
+                lblResultado.setText(
+                        "Número: "
+                                + resultado.getNumero()
+                                + " - Perdiste"
+                );
+            }
+
+            actualizarSaldo();
+
+        } catch (IllegalArgumentException e) {
+
+            JOptionPane.showMessageDialog(
+                    frame,
+                    e.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE
+            );
         }
     }
 
-    private char obtenerTipoApuesta() {
+    private boolean esTextoEntero(String texto) {
 
-        String seleccion = (String) cmbTipoApuesta.getSelectedItem();
-
-        switch (seleccion) {
-            case "Rojo":
-                return 'R';
-            case "Negro":
-                return 'N';
-            case "Par":
-                return 'P';
-            case "Impar":
-                return 'I';
-            default:
-                return 'R';
+        if (texto == null || texto.isEmpty()) {
+            return false;
         }
+
+        int inicio = 0;
+
+        if (texto.charAt(0) == '-') {
+
+            if (texto.length() == 1) {
+                return false;
+            }
+
+            inicio = 1;
+        }
+
+        for (int i = inicio; i < texto.length(); i++) {
+
+            if (!Character.isDigit(texto.charAt(i))) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private void actualizarSaldo() {
+
+        lblSaldo.setText(
+                "Saldo: $"
+                        + ruletaController.getSaldo()
+        );
     }
 
     private void volverMenu() {
+
         frame.dispose();
 
-        VentanaMenu ventanaMenu = new VentanaMenu(nombre);
+        VentanaMenu ventanaMenu =
+                new VentanaMenu(
+                        session,
+                        ruletaController
+                );
+
         ventanaMenu.mostrarVentana();
     }
 }

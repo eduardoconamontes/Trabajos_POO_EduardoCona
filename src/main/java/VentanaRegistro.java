@@ -5,21 +5,38 @@ import java.awt.event.ActionListener;
 
 public class VentanaRegistro {
 
-    private final JFrame frame = new JFrame("Registro - Casino Black Cat");
+    private final SessionController session;
 
-    private final JLabel lblUsuario = new JLabel("Usuario:");
-    private final JTextField txtUsuario = new JTextField();
+    private final JFrame frame =
+            new JFrame("Registro - Casino Black Cat");
 
-    private final JLabel lblClave = new JLabel("Clave:");
-    private final JPasswordField txtClave = new JPasswordField();
+    private final JLabel lblUsuario =
+            new JLabel("Usuario:");
 
-    private final JLabel lblNombre = new JLabel("Nombre completo:");
-    private final JTextField txtNombre = new JTextField();
+    private final JTextField txtUsuario =
+            new JTextField();
 
-    private final JButton btnRegistrar = new JButton("Registrar");
-    private final JButton btnVolver = new JButton("Volver");
+    private final JLabel lblClave =
+            new JLabel("Clave:");
 
-    public VentanaRegistro() {
+    private final JPasswordField txtClave =
+            new JPasswordField();
+
+    private final JLabel lblNombre =
+            new JLabel("Nombre completo:");
+
+    private final JTextField txtNombre =
+            new JTextField();
+
+    private final JButton btnRegistrar =
+            new JButton("Registrar");
+
+    private final JButton btnVolver =
+            new JButton("Volver");
+
+    public VentanaRegistro(SessionController session) {
+
+        this.session = session;
 
         frame.setSize(400, 280);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -37,46 +54,52 @@ public class VentanaRegistro {
         frame.add(btnRegistrar);
         frame.add(btnVolver);
 
-        btnRegistrar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                registrarUsuario();
-            }
-        });
+        btnRegistrar.addActionListener(
+                new ActionListener() {
 
-        btnVolver.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                volverLogin();
-            }
-        });
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        registrarUsuario();
+                    }
+                }
+        );
+
+        btnVolver.addActionListener(
+                new ActionListener() {
+
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        volverLogin();
+                    }
+                }
+        );
     }
 
     public void mostrarVentana() {
+
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
 
     private void registrarUsuario() {
 
-        String usuario = txtUsuario.getText();
-        String clave = new String(txtClave.getPassword());
-        String nombre = txtNombre.getText();
+        String usuario =
+                txtUsuario.getText();
 
-        if (usuario.isEmpty() || clave.isEmpty() || nombre.isEmpty()) {
+        String clave =
+                new String(txtClave.getPassword());
 
-            JOptionPane.showMessageDialog(
-                    frame,
-                    "Debe completar todos los campos",
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE
-            );
+        String nombre =
+                txtNombre.getText();
 
-        } else {
+        boolean registrado =
+                session.registrarUsuario(
+                        usuario,
+                        clave,
+                        nombre
+                );
 
-            Usuario nuevoUsuario = new Usuario(usuario, clave, nombre);
-
-            VentanaLogin.USUARIOS.add(nuevoUsuario);
+        if (registrado) {
 
             JOptionPane.showMessageDialog(
                     frame,
@@ -84,6 +107,15 @@ public class VentanaRegistro {
             );
 
             volverLogin();
+
+        } else {
+
+            JOptionPane.showMessageDialog(
+                    frame,
+                    "Debe completar todos los campos",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE
+            );
         }
     }
 
@@ -91,8 +123,9 @@ public class VentanaRegistro {
 
         frame.dispose();
 
-        VentanaLogin ventanaLogin = new VentanaLogin();
+        VentanaLogin ventanaLogin =
+                new VentanaLogin(session);
+
         ventanaLogin.mostrarVentana();
     }
 }
-

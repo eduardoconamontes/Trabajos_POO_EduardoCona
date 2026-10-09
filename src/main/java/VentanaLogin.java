@@ -2,30 +2,35 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.List;
 
 public class VentanaLogin {
 
-    public static final List<Usuario> USUARIOS = new ArrayList<>();
+    private final SessionController session;
 
-    private final JFrame frame = new JFrame("Login - Casino Black Cat");
+    private final JFrame frame =
+            new JFrame("Login - Casino Black Cat");
 
-    private final JLabel lblUsuario = new JLabel("Usuario:");
-    private final JTextField txtUsuario = new JTextField();
+    private final JLabel lblUsuario =
+            new JLabel("Usuario:");
 
-    private final JLabel lblClave = new JLabel("Clave:");
-    private final JPasswordField txtClave = new JPasswordField();
+    private final JTextField txtUsuario =
+            new JTextField();
 
-    private final JButton btnIngresar = new JButton("Ingresar");
-    private final JButton btnRegistrarse = new JButton("Registrarse");
+    private final JLabel lblClave =
+            new JLabel("Clave:");
 
-    public VentanaLogin() {
+    private final JPasswordField txtClave =
+            new JPasswordField();
 
-        if (USUARIOS.isEmpty()) {
-            USUARIOS.add(new Usuario("admin", "1234", "Administrador"));
-            USUARIOS.add(new Usuario("jugador", "1234", "Jugador"));
-        }
+    private final JButton btnIngresar =
+            new JButton("Ingresar");
+
+    private final JButton btnRegistrarse =
+            new JButton("Registrarse");
+
+    public VentanaLogin(SessionController session) {
+
+        this.session = session;
 
         frame.setSize(350, 220);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -40,44 +45,68 @@ public class VentanaLogin {
         frame.add(btnRegistrarse);
         frame.add(btnIngresar);
 
-        btnIngresar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                login();
-            }
-        });
+        btnIngresar.addActionListener(
+                new ActionListener() {
 
-        btnRegistrarse.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                abrirRegistro();
-            }
-        });
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        login();
+                    }
+                }
+        );
+
+        btnRegistrarse.addActionListener(
+                new ActionListener() {
+
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        abrirRegistro();
+                    }
+                }
+        );
     }
 
     public void mostrarVentana() {
+
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
 
     private void login() {
 
-        String usuario = txtUsuario.getText();
-        String clave = new String(txtClave.getPassword());
+        String usuario =
+                txtUsuario.getText();
 
-        String nombre = validarCredenciales(usuario, clave);
+        String clave =
+                new String(txtClave.getPassword());
 
-        if (!nombre.isEmpty()) {
+        boolean ingreso =
+                session.iniciarSesion(
+                        usuario,
+                        clave
+                );
+
+        if (ingreso) {
 
             JOptionPane.showMessageDialog(
                     frame,
-                    "Bienvenido " + nombre
+                    "Bienvenido "
+                            + session.getNombreUsuario()
             );
 
             frame.dispose();
 
-            VentanaMenu ventanaMenu = new VentanaMenu(nombre);
+            RuletaController ruletaController =
+                    new RuletaController();
+
+            VentanaMenu ventanaMenu =
+                    new VentanaMenu(
+                            session,
+                            ruletaController
+                    );
+
             ventanaMenu.mostrarVentana();
+
 
         } else {
 
@@ -90,25 +119,13 @@ public class VentanaLogin {
         }
     }
 
-    private String validarCredenciales(String u, String p) {
-
-        for (int i = 0; i < USUARIOS.size(); i++) {
-
-            Usuario usuario = USUARIOS.get(i);
-
-            if (usuario.validarCredenciales(u, p)) {
-                return usuario.getNombre();
-            }
-        }
-
-        return "";
-    }
-
     private void abrirRegistro() {
 
         frame.dispose();
 
-        VentanaRegistro ventanaRegistro = new VentanaRegistro();
+        VentanaRegistro ventanaRegistro =
+                new VentanaRegistro(session);
+
         ventanaRegistro.mostrarVentana();
     }
 }

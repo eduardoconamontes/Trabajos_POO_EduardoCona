@@ -1,75 +1,272 @@
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class RuletaTest {
 
-    @BeforeEach
-    public void reiniciarHistorial() {
-        Ruleta.historialSize = 0;
+    @Test
+    void ruletaIniciaConSaldoCero() {
+
+        Ruleta ruleta =
+                new Ruleta();
+
+        assertEquals(
+                0,
+                ruleta.getSaldo()
+        );
     }
 
     @Test
-    public void numeroRojo() {
+    void ruletaPuedeIniciarConSaldoDeterminado() {
 
-        boolean resultado = Ruleta.esRojo(7);
+        Ruleta ruleta =
+                new Ruleta(5000);
+
+        assertEquals(
+                5000,
+                ruleta.getSaldo()
+        );
+    }
+
+    @Test
+    void depositarMontoValido() {
+
+        Ruleta ruleta =
+                new Ruleta();
+
+        boolean resultado =
+                ruleta.depositar(5000);
 
         assertTrue(resultado);
+
+        assertEquals(
+                5000,
+                ruleta.getSaldo()
+        );
     }
 
     @Test
-    public void numeroNegro() {
+    void rechazarDepositoNegativo() {
 
-        boolean resultado = Ruleta.esRojo(8);
+        Ruleta ruleta =
+                new Ruleta();
+
+        boolean resultado =
+                ruleta.depositar(-500);
 
         assertFalse(resultado);
+
+        assertEquals(
+                0,
+                ruleta.getSaldo()
+        );
     }
 
     @Test
-    public void apuestaParCorrecta() {
+    void rechazarDepositoCero() {
 
-        boolean resultado = Ruleta.evaluarResultado(8, 'P');
+        Ruleta ruleta =
+                new Ruleta();
 
-        assertTrue(resultado);
-    }
-
-    @Test
-    public void apuestaImparCorrecta() {
-
-        boolean resultado = Ruleta.evaluarResultado(7, 'I');
-
-        assertTrue(resultado);
-    }
-
-    @Test
-    public void ceroPierdeApuesta() {
-
-        boolean resultado = Ruleta.evaluarResultado(0, 'R');
+        boolean resultado =
+                ruleta.depositar(0);
 
         assertFalse(resultado);
+
+        assertEquals(
+                0,
+                ruleta.getSaldo()
+        );
     }
 
     @Test
-    public void registrarResultado() {
+    void reconocerNumeroRojo() {
 
-        Ruleta.registrarResultado(7, 1000, true);
+        Ruleta ruleta =
+                new Ruleta();
 
-        assertEquals(1, Ruleta.historialSize);
-        assertEquals(7, Ruleta.historialNumeros[0]);
-        assertEquals(1000, Ruleta.historialApuestas[0]);
-        assertTrue(Ruleta.historialAciertos[0]);
+        assertTrue(
+                ruleta.esRojo(7)
+        );
     }
 
     @Test
-    public void calcularEstadisticas() {
+    void reconocerNumeroNegro() {
 
-        Ruleta.registrarResultado(7, 1000, true);
-        Ruleta.registrarResultado(8, 500, false);
+        Ruleta ruleta =
+                new Ruleta();
 
-        assertEquals(1500, Ruleta.calcularTotalApostado());
-        assertEquals(1, Ruleta.calcularTotalAciertos());
-        assertEquals(50.0, Ruleta.calcularPorcentajeAciertos());
-        assertEquals(500, Ruleta.calcularGananciaNeta());
+        assertFalse(
+                ruleta.esRojo(8)
+        );
+    }
+
+    @Test
+    void evaluarApuestaRojo() {
+
+        Ruleta ruleta =
+                new Ruleta();
+
+        boolean resultado =
+                ruleta.evaluarResultado(
+                        7,
+                        TipoApuesta.ROJO
+                );
+
+        assertTrue(resultado);
+    }
+
+    @Test
+    void evaluarApuestaNegro() {
+
+        Ruleta ruleta =
+                new Ruleta();
+
+        boolean resultado =
+                ruleta.evaluarResultado(
+                        8,
+                        TipoApuesta.NEGRO
+                );
+
+        assertTrue(resultado);
+    }
+
+    @Test
+    void evaluarApuestaPar() {
+
+        Ruleta ruleta =
+                new Ruleta();
+
+        boolean resultado =
+                ruleta.evaluarResultado(
+                        8,
+                        TipoApuesta.PAR
+                );
+
+        assertTrue(resultado);
+    }
+
+    @Test
+    void evaluarApuestaImpar() {
+
+        Ruleta ruleta =
+                new Ruleta();
+
+        boolean resultado =
+                ruleta.evaluarResultado(
+                        9,
+                        TipoApuesta.IMPAR
+                );
+
+        assertTrue(resultado);
+    }
+
+    @Test
+    void numeroCeroPierde() {
+
+        Ruleta ruleta =
+                new Ruleta();
+
+        assertFalse(
+                ruleta.evaluarResultado(
+                        0,
+                        TipoApuesta.ROJO
+                )
+        );
+
+        assertFalse(
+                ruleta.evaluarResultado(
+                        0,
+                        TipoApuesta.NEGRO
+                )
+        );
+
+        assertFalse(
+                ruleta.evaluarResultado(
+                        0,
+                        TipoApuesta.PAR
+                )
+        );
+
+        assertFalse(
+                ruleta.evaluarResultado(
+                        0,
+                        TipoApuesta.IMPAR
+                )
+        );
+    }
+
+    @Test
+    void giroEntregaNumeroEntreCeroYTreintaYSeis() {
+
+        Ruleta ruleta =
+                new Ruleta();
+
+        int numero =
+                ruleta.girarRuleta();
+
+        assertTrue(
+                numero >= 0 && numero <= 36
+        );
+    }
+
+    @Test
+    void noPermitirApuestaMayorAlSaldo() {
+
+        Ruleta ruleta =
+                new Ruleta(500);
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> ruleta.apostar(
+                        TipoApuesta.ROJO,
+                        1000
+                )
+        );
+    }
+
+    @Test
+    void apuestaValidaModificaSaldo() {
+
+        Ruleta ruleta =
+                new Ruleta(1000);
+
+        Resultado resultado =
+                ruleta.apostar(
+                        TipoApuesta.ROJO,
+                        100
+                );
+
+        if (resultado.isAcierto()) {
+
+            assertEquals(
+                    1100,
+                    ruleta.getSaldo()
+            );
+
+        } else {
+
+            assertEquals(
+                    900,
+                    ruleta.getSaldo()
+            );
+        }
+    }
+
+    @Test
+    void evitarQueSaldoSupereMaximoInt() {
+
+        Ruleta ruleta =
+                new Ruleta(Integer.MAX_VALUE);
+
+        boolean resultado =
+                ruleta.depositar(1);
+
+        assertFalse(resultado);
+
+        assertEquals(
+                Integer.MAX_VALUE,
+                ruleta.getSaldo()
+        );
     }
 }

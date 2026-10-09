@@ -124,11 +124,14 @@ public class VentanaRuleta {
 
                 JOptionPane.showMessageDialog(
                         frame,
-                        "Debe ingresar un número válido",
+                        "Ingrese un número válido",
                         "Error",
                         JOptionPane.ERROR_MESSAGE
                 );
             }
+
+            txtMonto.setText("");
+            txtMonto.requestFocus();
 
             return;
         }

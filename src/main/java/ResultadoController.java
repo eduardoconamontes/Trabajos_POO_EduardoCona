@@ -24,13 +24,14 @@ public class ResultadoController {
         return historial.size();
     }
 
-    public int calcularTotalApostado() {
+    public long calcularTotalApostado() {
 
-        int total = 0;
+        long total = 0;
 
         for (int i = 0; i < historial.size(); i++) {
 
-            Resultado resultado = historial.get(i);
+            Resultado resultado =
+                    historial.get(i);
 
             total += resultado.getMonto();
         }
@@ -64,13 +65,14 @@ public class ResultadoController {
                 / historial.size();
     }
 
-    public int calcularGananciaNeta() {
+    public long calcularGananciaNeta() {
 
-        int ganancia = 0;
+        long ganancia = 0;
 
         for (int i = 0; i < historial.size(); i++) {
 
-            Resultado resultado = historial.get(i);
+            Resultado resultado =
+                    historial.get(i);
 
             if (resultado.isAcierto()) {
                 ganancia += resultado.getMonto();

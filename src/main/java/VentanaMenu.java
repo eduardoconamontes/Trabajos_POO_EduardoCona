@@ -159,107 +159,116 @@ public class VentanaMenu {
 
     private void recargarSaldo() {
 
-        String montoTexto =
-                JOptionPane.showInputDialog(
-                        frame,
-                        "Ingrese el monto a depositar:"
-                );
+        while (true) {
 
-        if (montoTexto == null) {
-            return;
-        }
+            String montoTexto =
+                    JOptionPane.showInputDialog(
+                            frame,
+                            "Ingrese el monto a depositar:"
+                    );
 
-        montoTexto = montoTexto.trim();
+            // Si presiona Cancel
+            if (montoTexto == null) {
+                return;
+            }
 
-        if (montoTexto.isEmpty()) {
+            montoTexto = montoTexto.trim();
 
-            JOptionPane.showMessageDialog(
-                    frame,
-                    "Debe ingresar un monto",
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE
-            );
-
-            return;
-        }
-
-        int monto;
-
-        try {
-
-            monto = Integer.parseInt(montoTexto);
-
-        } catch (NumberFormatException e) {
-
-            if (esTextoEntero(montoTexto)) {
+            // Campo vacío
+            if (montoTexto.isEmpty()) {
 
                 JOptionPane.showMessageDialog(
                         frame,
-                        "El monto ingresado es demasiado grande",
+                        "Debe ingresar un monto",
                         "Error",
                         JOptionPane.ERROR_MESSAGE
                 );
+
+                continue;
+            }
+
+            int monto;
+
+            try {
+
+                monto = Integer.parseInt(montoTexto);
+
+            } catch (NumberFormatException e) {
+
+                if (esTextoEntero(montoTexto)) {
+
+                    JOptionPane.showMessageDialog(
+                            frame,
+                            "El monto ingresado es demasiado grande",
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE
+                    );
+
+                } else {
+
+                    JOptionPane.showMessageDialog(
+                            frame,
+                            "Debe ingresar un número válido",
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE
+                    );
+                }
+
+                continue;
+            }
+
+            // Número cero o negativo
+            if (monto <= 0) {
+
+                JOptionPane.showMessageDialog(
+                        frame,
+                        "El monto debe ser mayor que cero",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE
+                );
+
+                continue;
+            }
+
+            long saldoFinal =
+                    (long) ruletaController.getSaldo() + monto;
+
+            // Evitar que el saldo supere el máximo de int
+            if (saldoFinal > Integer.MAX_VALUE) {
+
+                JOptionPane.showMessageDialog(
+                        frame,
+                        "La recarga supera el saldo máximo permitido",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE
+                );
+
+                continue;
+            }
+
+            boolean deposito =
+                    ruletaController.depositar(monto);
+
+            if (deposito) {
+
+                JOptionPane.showMessageDialog(
+                        frame,
+                        "Saldo recargado correctamente"
+                );
+
+                actualizarDatos();
+
+                return;
 
             } else {
 
                 JOptionPane.showMessageDialog(
                         frame,
-                        "Debe ingresar un número válido",
+                        "No fue posible realizar la recarga",
                         "Error",
                         JOptionPane.ERROR_MESSAGE
                 );
             }
-
-            return;
-        }
-
-        if (monto <= 0) {
-
-            JOptionPane.showMessageDialog(
-                    frame,
-                    "El monto debe ser mayor que cero",
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE
-            );
-
-            return;
-        }
-
-        long saldoFinal =
-                (long) ruletaController.getSaldo() + monto;
-
-        if (saldoFinal > Integer.MAX_VALUE) {
-
-            JOptionPane.showMessageDialog(
-                    frame,
-                    "La recarga supera el saldo máximo permitido",
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE
-            );
-
-            return;
-        }
-
-        boolean deposito =
-                ruletaController.depositar(monto);
-
-        if (deposito) {
-
-            JOptionPane.showMessageDialog(
-                    frame,
-                    "Saldo recargado correctamente"
-            );
-
-            actualizarDatos();
-
-        } else {
-
-            JOptionPane.showMessageDialog(
-                    frame,
-                    "No fue posible realizar la recarga",
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE
-            );
         }
     }
 
@@ -388,7 +397,7 @@ public class VentanaMenu {
                 frame,
                 scrollHistorial,
                 "Historial",
-                JOptionPane.INFORMATION_MESSAGE
+                JOptionPane.PLAIN_MESSAGE
         );
     }
 

@@ -1,28 +1,61 @@
 public class RuletaController {
 
-    private Ruleta ruleta;
-    private ResultadoController resultadoController;
+    private final Ruleta ruleta;
+    private final SessionController session;
+    private final ResultadoController resultadoController;
 
-    public RuletaController() {
+    public RuletaController(SessionController session) {
 
-        ruleta = new Ruleta();
-        resultadoController = new ResultadoController();
+        this(
+                new Ruleta(),
+                session
+        );
     }
 
-    public RuletaController(int saldoInicial) {
+    public RuletaController(
+            int saldoInicial,
+            SessionController session) {
 
-        ruleta = new Ruleta(saldoInicial);
-        resultadoController = new ResultadoController();
+        this(
+                new Ruleta(saldoInicial),
+                session
+        );
+    }
+
+    public RuletaController(
+            Ruleta ruleta,
+            SessionController session) {
+
+        this.ruleta = ruleta;
+        this.session = session;
+
+        this.resultadoController =
+                new ResultadoController(session);
     }
 
     public Resultado realizarApuesta(
             TipoApuesta tipo,
             int monto) {
 
-        Resultado resultado =
-                ruleta.apostar(tipo, monto);
+        if (!session.hayUsuario()) {
 
-        resultadoController.registrarResultado(resultado);
+            throw new IllegalStateException(
+                    "No existe un usuario con sesión iniciada"
+            );
+        }
+
+        Resultado resultado =
+                ruleta.apostar(
+                        tipo,
+                        monto
+                );
+
+        Usuario usuarioActual =
+                session.getUsuarioActual();
+
+        usuarioActual.agregarResultado(
+                resultado
+        );
 
         return resultado;
     }

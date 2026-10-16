@@ -97,7 +97,7 @@ public class VentanaLogin {
             frame.dispose();
 
             RuletaController ruletaController =
-                    new RuletaController();
+                    new RuletaController(session);
 
             VentanaMenu ventanaMenu =
                     new VentanaMenu(

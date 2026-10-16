@@ -3,30 +3,34 @@ import java.util.List;
 
 public class ResultadoController {
 
-    private List<Resultado> historial;
+    private final SessionController session;
 
-    public ResultadoController() {
-        historial = new ArrayList<>();
-    }
-
-    public void registrarResultado(Resultado resultado) {
-
-        if (resultado != null) {
-            historial.add(resultado);
-        }
+    public ResultadoController(SessionController session) {
+        this.session = session;
     }
 
     public List<Resultado> getHistorial() {
-        return historial;
+
+        Usuario usuarioActual =
+                session.getUsuarioActual();
+
+        if (usuarioActual == null) {
+            return new ArrayList<>();
+        }
+
+        return usuarioActual.getHistorial();
     }
 
     public int getCantidadResultados() {
-        return historial.size();
+        return getHistorial().size();
     }
 
     public long calcularTotalApostado() {
 
         long total = 0;
+
+        List<Resultado> historial =
+                getHistorial();
 
         for (int i = 0; i < historial.size(); i++) {
 
@@ -43,9 +47,13 @@ public class ResultadoController {
 
         int total = 0;
 
+        List<Resultado> historial =
+                getHistorial();
+
         for (int i = 0; i < historial.size(); i++) {
 
-            Resultado resultado = historial.get(i);
+            Resultado resultado =
+                    historial.get(i);
 
             if (resultado.isAcierto()) {
                 total++;
@@ -56,6 +64,9 @@ public class ResultadoController {
     }
 
     public double calcularPorcentajeAciertos() {
+
+        List<Resultado> historial =
+                getHistorial();
 
         if (historial.isEmpty()) {
             return 0;
@@ -68,6 +79,9 @@ public class ResultadoController {
     public long calcularGananciaNeta() {
 
         long ganancia = 0;
+
+        List<Resultado> historial =
+                getHistorial();
 
         for (int i = 0; i < historial.size(); i++) {
 

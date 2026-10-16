@@ -1,3 +1,5 @@
+package modelo;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -81,16 +83,16 @@ public class Ruleta {
 
         switch (tipo) {
 
-            case ROJO:
+            case TipoApuesta.ROJO:
                 return esRojo(numero);
 
-            case NEGRO:
+            case TipoApuesta.NEGRO:
                 return !esRojo(numero);
 
-            case PAR:
+            case TipoApuesta.PAR:
                 return numero % 2 == 0;
 
-            case IMPAR:
+            case TipoApuesta.IMPAR:
                 return numero % 2 != 0;
 
             default:

@@ -1,3 +1,10 @@
+package controlador;
+
+import modelo.Resultado;
+import modelo.Ruleta;
+import modelo.TipoApuesta;
+import modelo.Usuario;
+
 public class RuletaController {
 
     private final Ruleta ruleta;

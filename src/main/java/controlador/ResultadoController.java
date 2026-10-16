@@ -1,3 +1,8 @@
+package controlador;
+
+import modelo.Resultado;
+import modelo.Usuario;
+
 import java.util.ArrayList;
 import java.util.List;
 

@@ -1,3 +1,10 @@
+package vista;
+
+import controlador.RuletaController;
+import controlador.SessionController;
+import modelo.Resultado;
+import modelo.TipoApuesta;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;

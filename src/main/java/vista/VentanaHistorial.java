@@ -1,3 +1,9 @@
+package vista;
+
+import controlador.ResultadoController;
+import controlador.RuletaController;
+import controlador.SessionController;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;

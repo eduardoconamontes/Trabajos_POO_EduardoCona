@@ -2,7 +2,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.List;
 
 public class VentanaMenu {
 
@@ -42,7 +41,9 @@ public class VentanaMenu {
 
         frame.setSize(450, 420);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setLayout(new GridLayout(7, 1, 10, 10));
+        frame.setLayout(
+                new GridLayout(7, 1, 10, 10)
+        );
 
         frame.add(lblBienvenida);
         frame.add(lblSaldo);
@@ -54,40 +55,65 @@ public class VentanaMenu {
 
         actualizarDatos();
 
-        btnJugar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                abrirRuleta();
-            }
-        });
+        btnJugar.addActionListener(
+                new ActionListener() {
 
-        btnHistorial.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                mostrarHistorial();
-            }
-        });
+                    @Override
+                    public void actionPerformed(
+                            ActionEvent e) {
 
-        btnCambiarNombre.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                cambiarNombre();
-            }
-        });
+                        abrirRuleta();
+                    }
+                }
+        );
 
-        btnRecargarSaldo.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                recargarSaldo();
-            }
-        });
+        btnHistorial.addActionListener(
+                new ActionListener() {
 
-        btnCerrarSesion.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                cerrarSesion();
-            }
-        });
+                    @Override
+                    public void actionPerformed(
+                            ActionEvent e) {
+
+                        abrirHistorial();
+                    }
+                }
+        );
+
+        btnCambiarNombre.addActionListener(
+                new ActionListener() {
+
+                    @Override
+                    public void actionPerformed(
+                            ActionEvent e) {
+
+                        cambiarNombre();
+                    }
+                }
+        );
+
+        btnRecargarSaldo.addActionListener(
+                new ActionListener() {
+
+                    @Override
+                    public void actionPerformed(
+                            ActionEvent e) {
+
+                        recargarSaldo();
+                    }
+                }
+        );
+
+        btnCerrarSesion.addActionListener(
+                new ActionListener() {
+
+                    @Override
+                    public void actionPerformed(
+                            ActionEvent e) {
+
+                        cerrarSesion();
+                    }
+                }
+        );
     }
 
     public void mostrarVentana() {
@@ -101,11 +127,13 @@ public class VentanaMenu {
     private void actualizarDatos() {
 
         lblBienvenida.setText(
-                "Bienvenido " + session.getNombreUsuario()
+                "Bienvenido "
+                        + session.getNombreUsuario()
         );
 
         lblSaldo.setText(
-                "Saldo actual: $" + ruletaController.getSaldo()
+                "Saldo actual: $"
+                        + ruletaController.getSaldo()
         );
     }
 
@@ -122,6 +150,19 @@ public class VentanaMenu {
         ventanaRuleta.mostrarVentana();
     }
 
+    private void abrirHistorial() {
+
+        frame.dispose();
+
+        VentanaHistorial ventanaHistorial =
+                new VentanaHistorial(
+                        session,
+                        ruletaController
+                );
+
+        ventanaHistorial.mostrarVentana();
+    }
+
     private void cambiarNombre() {
 
         String nuevoNombre =
@@ -135,7 +176,9 @@ public class VentanaMenu {
         }
 
         boolean cambiado =
-                session.cambiarNombre(nuevoNombre);
+                session.cambiarNombre(
+                        nuevoNombre
+                );
 
         if (cambiado) {
 
@@ -167,14 +210,13 @@ public class VentanaMenu {
                             "Ingrese el monto a depositar:"
                     );
 
-            // Si presiona Cancel
             if (montoTexto == null) {
                 return;
             }
 
-            montoTexto = montoTexto.trim();
+            montoTexto =
+                    montoTexto.trim();
 
-            // Campo vacío
             if (montoTexto.isEmpty()) {
 
                 JOptionPane.showMessageDialog(
@@ -191,7 +233,10 @@ public class VentanaMenu {
 
             try {
 
-                monto = Integer.parseInt(montoTexto);
+                monto =
+                        Integer.parseInt(
+                                montoTexto
+                        );
 
             } catch (NumberFormatException e) {
 
@@ -217,7 +262,6 @@ public class VentanaMenu {
                 continue;
             }
 
-            // Número cero o negativo
             if (monto <= 0) {
 
                 JOptionPane.showMessageDialog(
@@ -231,9 +275,10 @@ public class VentanaMenu {
             }
 
             long saldoFinal =
-                    (long) ruletaController.getSaldo() + monto;
+                    (long)
+                            ruletaController.getSaldo()
+                            + monto;
 
-            // Evitar que el saldo supere el máximo de int
             if (saldoFinal > Integer.MAX_VALUE) {
 
                 JOptionPane.showMessageDialog(
@@ -247,7 +292,9 @@ public class VentanaMenu {
             }
 
             boolean deposito =
-                    ruletaController.depositar(monto);
+                    ruletaController.depositar(
+                            monto
+                    );
 
             if (deposito) {
 
@@ -272,9 +319,12 @@ public class VentanaMenu {
         }
     }
 
-    private boolean esTextoEntero(String texto) {
+    private boolean esTextoEntero(
+            String texto) {
 
-        if (texto == null || texto.isEmpty()) {
+        if (texto == null
+                || texto.isEmpty()) {
+
             return false;
         }
 
@@ -289,116 +339,18 @@ public class VentanaMenu {
             inicio = 1;
         }
 
-        for (int i = inicio; i < texto.length(); i++) {
+        for (int i = inicio;
+             i < texto.length();
+             i++) {
 
-            if (!Character.isDigit(texto.charAt(i))) {
+            if (!Character.isDigit(
+                    texto.charAt(i))) {
+
                 return false;
             }
         }
 
         return true;
-    }
-
-    private void mostrarHistorial() {
-
-        ResultadoController resultadoController =
-                ruletaController.getResultadoController();
-
-        List<Resultado> historial =
-                resultadoController.getHistorial();
-
-        StringBuilder texto =
-                new StringBuilder();
-
-        texto.append("HISTORIAL DE PARTIDAS\n\n");
-
-        if (historial.isEmpty()) {
-
-            texto.append(
-                    "Todavía no se han realizado apuestas."
-            );
-
-        } else {
-
-            for (int i = 0; i < historial.size(); i++) {
-
-                Resultado resultado =
-                        historial.get(i);
-
-                texto.append("Ronda ")
-                        .append(i + 1)
-                        .append(" | Número: ")
-                        .append(resultado.getNumero())
-                        .append(" | Tipo: ")
-                        .append(resultado.getTipoApuesta())
-                        .append(" | Apuesta: $")
-                        .append(resultado.getMonto())
-                        .append(" | Resultado: ");
-
-                if (resultado.isAcierto()) {
-                    texto.append("Ganó");
-                } else {
-                    texto.append("Perdió");
-                }
-
-                texto.append("\n");
-            }
-
-            texto.append("\nESTADÍSTICAS\n\n");
-
-            texto.append("Rondas jugadas: ")
-                    .append(resultadoController.getCantidadResultados())
-                    .append("\n");
-
-            texto.append("Total apostado: $")
-                    .append(
-                            resultadoController
-                                    .calcularTotalApostado()
-                    )
-                    .append("\n");
-
-            texto.append("Total de aciertos: ")
-                    .append(
-                            resultadoController
-                                    .calcularTotalAciertos()
-                    )
-                    .append("\n");
-
-            texto.append("Porcentaje de aciertos: ")
-                    .append(
-                            resultadoController
-                                    .calcularPorcentajeAciertos()
-                    )
-                    .append("%\n");
-
-            texto.append("Ganancia o pérdida neta: $")
-                    .append(
-                            resultadoController
-                                    .calcularGananciaNeta()
-                    );
-        }
-
-        JTextArea areaHistorial =
-                new JTextArea(texto.toString());
-
-        areaHistorial.setEditable(false);
-        areaHistorial.setRows(20);
-        areaHistorial.setColumns(55);
-        areaHistorial.setCaretPosition(0);
-
-        JScrollPane scrollHistorial =
-                new JScrollPane(areaHistorial);
-
-        scrollHistorial.setPreferredSize(
-                new Dimension(650, 450)
-        );
-
-        JOptionPane.showMessageDialog(
-                frame,
-                scrollHistorial,
-                "Historial",
-                JOptionPane.PLAIN_MESSAGE
-        );
     }
 
     private void cerrarSesion() {

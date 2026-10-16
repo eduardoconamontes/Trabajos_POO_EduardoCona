@@ -1,3 +1,6 @@
+import modelo.Resultado;
+import modelo.Ruleta;
+import modelo.TipoApuesta;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

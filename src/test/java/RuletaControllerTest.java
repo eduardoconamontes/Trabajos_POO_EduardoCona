@@ -1,3 +1,7 @@
+import controlador.RuletaController;
+import controlador.SessionController;
+import modelo.Resultado;
+import modelo.TipoApuesta;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -7,8 +11,16 @@ public class RuletaControllerTest {
     @Test
     void controladorIniciaConSaldoCero() {
 
+        SessionController session =
+                new SessionController();
+
+        session.iniciarSesion(
+                "admin",
+                "1234"
+        );
+
         RuletaController controller =
-                new RuletaController();
+                new RuletaController(session);
 
         assertEquals(
                 0,
@@ -19,8 +31,19 @@ public class RuletaControllerTest {
     @Test
     void controladorPuedeIniciarConSaldo() {
 
+        SessionController session =
+                new SessionController();
+
+        session.iniciarSesion(
+                "admin",
+                "1234"
+        );
+
         RuletaController controller =
-                new RuletaController(5000);
+                new RuletaController(
+                        5000,
+                        session
+                );
 
         assertEquals(
                 5000,
@@ -31,8 +54,16 @@ public class RuletaControllerTest {
     @Test
     void depositarSaldoDesdeControlador() {
 
+        SessionController session =
+                new SessionController();
+
+        session.iniciarSesion(
+                "admin",
+                "1234"
+        );
+
         RuletaController controller =
-                new RuletaController();
+                new RuletaController(session);
 
         boolean resultado =
                 controller.depositar(5000);
@@ -48,8 +79,16 @@ public class RuletaControllerTest {
     @Test
     void rechazarDepositoInvalido() {
 
+        SessionController session =
+                new SessionController();
+
+        session.iniciarSesion(
+                "admin",
+                "1234"
+        );
+
         RuletaController controller =
-                new RuletaController();
+                new RuletaController(session);
 
         boolean resultado =
                 controller.depositar(-500);
@@ -65,8 +104,19 @@ public class RuletaControllerTest {
     @Test
     void noPermitirApuestaSinSaldoSuficiente() {
 
+        SessionController session =
+                new SessionController();
+
+        session.iniciarSesion(
+                "admin",
+                "1234"
+        );
+
         RuletaController controller =
-                new RuletaController(500);
+                new RuletaController(
+                        500,
+                        session
+                );
 
         assertThrows(
                 IllegalArgumentException.class,
@@ -78,14 +128,32 @@ public class RuletaControllerTest {
     }
 
     @Test
-    void apuestaSeRegistraEnHistorial() {
+    void apuestaSeRegistraEnHistorialDelUsuario() {
+
+        SessionController session =
+                new SessionController();
+
+        session.iniciarSesion(
+                "admin",
+                "1234"
+        );
 
         RuletaController controller =
-                new RuletaController(5000);
+                new RuletaController(
+                        5000,
+                        session
+                );
 
         controller.realizarApuesta(
                 TipoApuesta.ROJO,
                 500
+        );
+
+        assertEquals(
+                1,
+                session.getUsuarioActual()
+                        .getHistorial()
+                        .size()
         );
 
         assertEquals(
@@ -99,8 +167,19 @@ public class RuletaControllerTest {
     @Test
     void apuestaActualizaSaldo() {
 
+        SessionController session =
+                new SessionController();
+
+        session.iniciarSesion(
+                "admin",
+                "1234"
+        );
+
         RuletaController controller =
-                new RuletaController(5000);
+                new RuletaController(
+                        5000,
+                        session
+                );
 
         Resultado resultado =
                 controller.realizarApuesta(
@@ -122,5 +201,26 @@ public class RuletaControllerTest {
                     controller.getSaldo()
             );
         }
+    }
+
+    @Test
+    void noPermitirApuestaSinUsuarioAutenticado() {
+
+        SessionController session =
+                new SessionController();
+
+        RuletaController controller =
+                new RuletaController(
+                        5000,
+                        session
+                );
+
+        assertThrows(
+                IllegalStateException.class,
+                () -> controller.realizarApuesta(
+                        TipoApuesta.ROJO,
+                        500
+                )
+        );
     }
 }

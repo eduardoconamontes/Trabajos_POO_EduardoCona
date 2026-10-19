@@ -1,3 +1,5 @@
+package modelo;
+
 public class Resultado {
 
     private int numero;

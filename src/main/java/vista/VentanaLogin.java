@@ -1,14 +1,19 @@
+package vista;
+
+import controlador.RuletaController;
+import controlador.SessionController;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class VentanaRegistro {
+public class VentanaLogin {
 
     private final SessionController session;
 
     private final JFrame frame =
-            new JFrame("Registro - Casino Black Cat");
+            new JFrame("Login - Casino Black Cat");
 
     private final JLabel lblUsuario =
             new JLabel("Usuario:");
@@ -22,25 +27,19 @@ public class VentanaRegistro {
     private final JPasswordField txtClave =
             new JPasswordField();
 
-    private final JLabel lblNombre =
-            new JLabel("Nombre completo:");
+    private final JButton btnIngresar =
+            new JButton("Ingresar");
 
-    private final JTextField txtNombre =
-            new JTextField();
+    private final JButton btnRegistrarse =
+            new JButton("Registrarse");
 
-    private final JButton btnRegistrar =
-            new JButton("Registrar");
-
-    private final JButton btnVolver =
-            new JButton("Volver");
-
-    public VentanaRegistro(SessionController session) {
+    public VentanaLogin(SessionController session) {
 
         this.session = session;
 
-        frame.setSize(400, 280);
+        frame.setSize(350, 220);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setLayout(new GridLayout(4, 2, 10, 10));
+        frame.setLayout(new GridLayout(3, 2, 10, 10));
 
         frame.add(lblUsuario);
         frame.add(txtUsuario);
@@ -48,28 +47,25 @@ public class VentanaRegistro {
         frame.add(lblClave);
         frame.add(txtClave);
 
-        frame.add(lblNombre);
-        frame.add(txtNombre);
+        frame.add(btnRegistrarse);
+        frame.add(btnIngresar);
 
-        frame.add(btnRegistrar);
-        frame.add(btnVolver);
-
-        btnRegistrar.addActionListener(
+        btnIngresar.addActionListener(
                 new ActionListener() {
 
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        registrarUsuario();
+                        login();
                     }
                 }
         );
 
-        btnVolver.addActionListener(
+        btnRegistrarse.addActionListener(
                 new ActionListener() {
 
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        volverLogin();
+                        abrirRegistro();
                     }
                 }
         );
@@ -81,7 +77,7 @@ public class VentanaRegistro {
         frame.setVisible(true);
     }
 
-    private void registrarUsuario() {
+    private void login() {
 
         String usuario =
                 txtUsuario.getText();
@@ -89,43 +85,52 @@ public class VentanaRegistro {
         String clave =
                 new String(txtClave.getPassword());
 
-        String nombre =
-                txtNombre.getText();
-
-        boolean registrado =
-                session.registrarUsuario(
+        boolean ingreso =
+                session.iniciarSesion(
                         usuario,
-                        clave,
-                        nombre
+                        clave
                 );
 
-        if (registrado) {
+        if (ingreso) {
 
             JOptionPane.showMessageDialog(
                     frame,
-                    "Usuario registrado correctamente"
+                    "Bienvenido "
+                            + session.getNombreUsuario()
             );
 
-            volverLogin();
+            frame.dispose();
+
+            RuletaController ruletaController =
+                    new RuletaController(session);
+
+            VentanaMenu ventanaMenu =
+                    new VentanaMenu(
+                            session,
+                            ruletaController
+                    );
+
+            ventanaMenu.mostrarVentana();
+
 
         } else {
 
             JOptionPane.showMessageDialog(
                     frame,
-                    "Debe completar todos los campos",
+                    "modelo.Usuario o clave incorrectos",
                     "Error",
                     JOptionPane.ERROR_MESSAGE
             );
         }
     }
 
-    private void volverLogin() {
+    private void abrirRegistro() {
 
         frame.dispose();
 
-        VentanaLogin ventanaLogin =
-                new VentanaLogin(session);
+        VentanaRegistro ventanaRegistro =
+                new VentanaRegistro(session);
 
-        ventanaLogin.mostrarVentana();
+        ventanaRegistro.mostrarVentana();
     }
 }

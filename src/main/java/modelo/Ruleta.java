@@ -1,3 +1,7 @@
+package modelo;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class Ruleta {
@@ -9,6 +13,7 @@ public class Ruleta {
 
     private int saldo;
     private Random rng;
+    private List<Resultado> resultados;
 
     public Ruleta() {
         this(0);
@@ -23,10 +28,15 @@ public class Ruleta {
         }
 
         this.rng = new Random();
+        this.resultados = new ArrayList<>();
     }
 
     public int getSaldo() {
         return saldo;
+    }
+
+    public List<Resultado> getResultados() {
+        return new ArrayList<>(resultados);
     }
 
     public boolean depositar(int monto) {
@@ -73,16 +83,16 @@ public class Ruleta {
 
         switch (tipo) {
 
-            case ROJO:
+            case TipoApuesta.ROJO:
                 return esRojo(numero);
 
-            case NEGRO:
+            case TipoApuesta.NEGRO:
                 return !esRojo(numero);
 
-            case PAR:
+            case TipoApuesta.PAR:
                 return numero % 2 == 0;
 
-            case IMPAR:
+            case TipoApuesta.IMPAR:
                 return numero % 2 != 0;
 
             default:
@@ -140,11 +150,16 @@ public class Ruleta {
             saldo -= monto;
         }
 
-        return new Resultado(
-                numero,
-                tipo,
-                monto,
-                acierto
-        );
+        Resultado resultado =
+                new Resultado(
+                        numero,
+                        tipo,
+                        monto,
+                        acierto
+                );
+
+        resultados.add(resultado);
+
+        return resultado;
     }
 }

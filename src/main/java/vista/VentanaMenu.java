@@ -1,5 +1,7 @@
+
 package vista;
 
+import controlador.EstadisticasController;
 import controlador.RuletaController;
 import controlador.SessionController;
 
@@ -12,6 +14,7 @@ public class VentanaMenu {
 
     private final SessionController session;
     private final RuletaController ruletaController;
+    private final EstadisticasController estadisticasController;
 
     private final JFrame frame =
             new JFrame("Menú - Casino Black Cat");
@@ -27,6 +30,9 @@ public class VentanaMenu {
 
     private final JButton btnHistorial =
             new JButton("Historial");
+
+    private final JButton btnEstadisticas =
+            new JButton("Estadísticas");
 
     private final JButton btnCambiarNombre =
             new JButton("Cambiar nombre");
@@ -44,87 +50,69 @@ public class VentanaMenu {
         this.session = session;
         this.ruletaController = ruletaController;
 
-        frame.setSize(450, 420);
+        this.estadisticasController =
+                new EstadisticasController(session);
+
+        frame.setSize(450, 470);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setLayout(
-                new GridLayout(7, 1, 10, 10)
-        );
+        frame.setLayout(new GridLayout(8, 1, 10, 10));
 
         frame.add(lblBienvenida);
         frame.add(lblSaldo);
         frame.add(btnJugar);
         frame.add(btnHistorial);
+        frame.add(btnEstadisticas);
         frame.add(btnCambiarNombre);
         frame.add(btnRecargarSaldo);
         frame.add(btnCerrarSesion);
 
         actualizarDatos();
 
-        btnJugar.addActionListener(
-                new ActionListener() {
+        btnJugar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                abrirRuleta();
+            }
+        });
 
-                    @Override
-                    public void actionPerformed(
-                            ActionEvent e) {
+        btnHistorial.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                abrirHistorial();
+            }
+        });
 
-                        abrirRuleta();
-                    }
-                }
-        );
+        btnEstadisticas.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                mostrarEstadisticas();
+            }
+        });
 
-        btnHistorial.addActionListener(
-                new ActionListener() {
+        btnCambiarNombre.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cambiarNombre();
+            }
+        });
 
-                    @Override
-                    public void actionPerformed(
-                            ActionEvent e) {
+        btnRecargarSaldo.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                recargarSaldo();
+            }
+        });
 
-                        abrirHistorial();
-                    }
-                }
-        );
-
-        btnCambiarNombre.addActionListener(
-                new ActionListener() {
-
-                    @Override
-                    public void actionPerformed(
-                            ActionEvent e) {
-
-                        cambiarNombre();
-                    }
-                }
-        );
-
-        btnRecargarSaldo.addActionListener(
-                new ActionListener() {
-
-                    @Override
-                    public void actionPerformed(
-                            ActionEvent e) {
-
-                        recargarSaldo();
-                    }
-                }
-        );
-
-        btnCerrarSesion.addActionListener(
-                new ActionListener() {
-
-                    @Override
-                    public void actionPerformed(
-                            ActionEvent e) {
-
-                        cerrarSesion();
-                    }
-                }
-        );
+        btnCerrarSesion.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cerrarSesion();
+            }
+        });
     }
 
     public void mostrarVentana() {
-
         actualizarDatos();
-
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
@@ -132,13 +120,11 @@ public class VentanaMenu {
     private void actualizarDatos() {
 
         lblBienvenida.setText(
-                "Bienvenido "
-                        + session.getNombreUsuario()
+                "Bienvenido " + session.getNombreUsuario()
         );
 
         lblSaldo.setText(
-                "Saldo actual: $"
-                        + ruletaController.getSaldo()
+                "Saldo actual: $" + ruletaController.getSaldo()
         );
     }
 
@@ -147,10 +133,7 @@ public class VentanaMenu {
         frame.dispose();
 
         VentanaRuleta ventanaRuleta =
-                new VentanaRuleta(
-                        session,
-                        ruletaController
-                );
+                new VentanaRuleta(session, ruletaController);
 
         ventanaRuleta.mostrarVentana();
     }
@@ -160,12 +143,22 @@ public class VentanaMenu {
         frame.dispose();
 
         VentanaHistorial ventanaHistorial =
-                new VentanaHistorial(
-                        session,
-                        ruletaController
-                );
+                new VentanaHistorial(session, ruletaController);
 
         ventanaHistorial.mostrarVentana();
+    }
+
+    private void mostrarEstadisticas() {
+
+        String texto =
+                estadisticasController.obtenerEstadisticas();
+
+        JOptionPane.showMessageDialog(
+                frame,
+                texto,
+                "Estadísticas - Casino Black Cat",
+                JOptionPane.PLAIN_MESSAGE
+        );
     }
 
     private void cambiarNombre() {
@@ -181,9 +174,7 @@ public class VentanaMenu {
         }
 
         boolean cambiado =
-                session.cambiarNombre(
-                        nuevoNombre
-                );
+                session.cambiarNombre(nuevoNombre);
 
         if (cambiado) {
 
@@ -219,8 +210,7 @@ public class VentanaMenu {
                 return;
             }
 
-            montoTexto =
-                    montoTexto.trim();
+            montoTexto = montoTexto.trim();
 
             if (montoTexto.isEmpty()) {
 
@@ -237,11 +227,7 @@ public class VentanaMenu {
             int monto;
 
             try {
-
-                monto =
-                        Integer.parseInt(
-                                montoTexto
-                        );
+                monto = Integer.parseInt(montoTexto);
 
             } catch (NumberFormatException e) {
 
@@ -280,9 +266,7 @@ public class VentanaMenu {
             }
 
             long saldoFinal =
-                    (long)
-                            ruletaController.getSaldo()
-                            + monto;
+                    (long) ruletaController.getSaldo() + monto;
 
             if (saldoFinal > Integer.MAX_VALUE) {
 
@@ -297,9 +281,7 @@ public class VentanaMenu {
             }
 
             boolean deposito =
-                    ruletaController.depositar(
-                            monto
-                    );
+                    ruletaController.depositar(monto);
 
             if (deposito) {
 
@@ -309,7 +291,6 @@ public class VentanaMenu {
                 );
 
                 actualizarDatos();
-
                 return;
 
             } else {
@@ -324,12 +305,9 @@ public class VentanaMenu {
         }
     }
 
-    private boolean esTextoEntero(
-            String texto) {
+    private boolean esTextoEntero(String texto) {
 
-        if (texto == null
-                || texto.isEmpty()) {
-
+        if (texto == null || texto.isEmpty()) {
             return false;
         }
 
@@ -344,13 +322,9 @@ public class VentanaMenu {
             inicio = 1;
         }
 
-        for (int i = inicio;
-             i < texto.length();
-             i++) {
+        for (int i = inicio; i < texto.length(); i++) {
 
-            if (!Character.isDigit(
-                    texto.charAt(i))) {
-
+            if (!Character.isDigit(texto.charAt(i))) {
                 return false;
             }
         }
@@ -361,7 +335,6 @@ public class VentanaMenu {
     private void cerrarSesion() {
 
         session.cerrarSesion();
-
         frame.dispose();
 
         VentanaLogin ventanaLogin =
